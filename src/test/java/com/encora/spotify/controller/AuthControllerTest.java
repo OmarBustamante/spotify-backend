@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class AuthControllerTest {
 
     @Autowired
@@ -32,11 +34,15 @@ public class AuthControllerTest {
         SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("valid-code", "http://localhost:3000/callback");
         SpotifyAuthResponseDto response = new SpotifyAuthResponseDto("access-token", "refresh-token", 3600);
 
-        Mockito.when(authService.exchangeCodeForToken(request)).thenReturn(response);
+        Mockito.when(authService.exchangeCodeForToken(Mockito.any())).thenReturn(response);
 
         mockMvc.perform(post("/auth/spotify")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
+                .andDo(result -> {
+                    System.out.println("Response: " + result.getResponse().getContentAsString());
+                })
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"))
                 .andExpect(jsonPath("$.expiresIn").value(3600));
