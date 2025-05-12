@@ -13,6 +13,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.attribute.standard.Media;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,5 +48,32 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
                 .andExpect(jsonPath("$.refreshToken").value("refresh-token"))
                 .andExpect(jsonPath("$.expiresIn").value(3600));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenCodeIsInvalid() throws Exception{
+        SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("invalid-code", "http://localhost:3000/callback");
+
+        Mockito.when(authService.exchangeCodeForToken(Mockito.any())).thenThrow(new RuntimeException("Invalid code"));
+
+        mockMvc.perform(post("/auth/spotify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid code"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMissingFields() throws Exception{
+        String invalidJson = """
+                {
+                    "redirectUri": "http:localhost:3000/callback"
+                }
+                """;
+
+        mockMvc.perform(post("/auth/spotify")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidJson))
+                .andExpect(status().isBadRequest());
     }
 }

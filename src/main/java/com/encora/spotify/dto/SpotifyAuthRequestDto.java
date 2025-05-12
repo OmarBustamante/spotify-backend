@@ -1,7 +1,13 @@
 package com.encora.spotify.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SpotifyAuthRequestDto {
+
+    @NotBlank(message = "Code must not be blank")
     private String code;
+
+    @NotBlank(message = "Redirect URI must not be blank")
     private String redirectUri;
 
     //Jackson (deserializacion JSON)
