@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "spotify")
-public class SpotifyConfig {
+public class SpotifyProperties {
     private String clientId;
     private String clientSecret;
 
