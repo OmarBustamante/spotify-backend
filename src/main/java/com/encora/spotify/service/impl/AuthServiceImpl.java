@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
         String credentials = spotifyProperties.getClientId() + ":" + spotifyProperties.getClientSecret();
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-        header.set("Authorization", "Basic" + encodedCredentials);
+        header.set("Authorization", "Basic " + encodedCredentials);
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");

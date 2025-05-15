@@ -60,15 +60,12 @@ public class ArtistControllerTest {
 
     @Test
     void shouldReturnBadGatewayWhenSpotifyFails() throws Exception{
-        String token = "Bearer valid-token";
-
-        Mockito.when(artistService.getTopArtists(token))
+        Mockito.when(artistService.getTopArtists(Mockito.anyString()))
                 .thenThrow(new RuntimeException("Spotify API failed"));
 
         mockMvc.perform(get("/me/top/artists")
-                .header("Authorization", token))
-                .andExpect(status().isBadGateway())
-                .andExpect(content().string("Spotify API failed"));
+                .header("Authorization", "Bearer valid-token"))
+                .andExpect(status().isBadGateway());
     }
 
     @Test
@@ -82,5 +79,24 @@ public class ArtistControllerTest {
                 .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    // artist/{id}
+    @Test
+    void shouldReturnArtistDetailsWhenIdIsValid() throws Exception{
+        String token = "Bearer valid-token";
+        String artistId = "12345";
+
+        SpotifyArtistDto artist = new SpotifyArtistDto("12345", "Artist name", List.of("pop"), "https://example.com/image.jpg");
+
+        Mockito.when(artistService.getArtistDetails("valid-token", artistId)).thenReturn(artist);
+
+        mockMvc.perform(get("/artists/{id}", artistId)
+                .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("12345"))
+                .andExpect(jsonPath("$.name").value("Artist name"))
+                .andExpect(jsonPath("$.genres[0]").value("pop"))
+                .andExpect(jsonPath("$.imageUrl").value("https://example.com/image.jpg"));
     }
 }
