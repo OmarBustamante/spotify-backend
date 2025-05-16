@@ -2,7 +2,6 @@ package com.encora.spotify.controller;
 
 import com.encora.spotify.dto.SpotifyArtistDto;
 import com.encora.spotify.service.ArtistService;
-import com.encora.spotify.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
