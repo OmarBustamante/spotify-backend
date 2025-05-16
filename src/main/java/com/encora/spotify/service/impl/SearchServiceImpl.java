@@ -37,7 +37,7 @@ public class SearchServiceImpl implements SearchService {
                 (String) item.get("id"),
                 (String) item.get("name"),
                 (List<String>) item.get("genres"),
-                ((Map<String, Object>) ((List<?>) item.get("external_urls")).get(0)).get("spotify").toString()
+                ((Map<String, Object>) item.get("external_urls")).get("spotify").toString()
         )).collect(Collectors.toList());
     }
 
@@ -52,13 +52,23 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Object> albumsMap = (Map<String, Object>) body.get("albums");
         List<Map<String, Object>> items = (List<Map<String, Object>>) albumsMap.get("items");
 
-        return items.stream().map(item -> new SpotifyAlbumDto(
-                (String) item.get("id"),
-                (String) item.get("name"),
-                (List<String>) ((Map<String, Object>) ((List<?>) item.get("artists")).get(0)).get("name"),
-                (String) item.get("imageUrl"),
-                (String) item.get("release_date")
-        )).collect(Collectors.toList());
+        return items.stream().map(item -> {
+            List<Map<String, Object>> artistsList = (List<Map<String, Object>>) item.get("artists");
+            List<String> artistNames = artistsList.stream()
+                    .map(artist -> (String) artist.get("name"))
+                    .collect(Collectors.toList());
+
+            List<Map<String, Object>> images = (List<Map<String, Object>>) item.get("images");
+            String imageUrl = images.isEmpty() ? null : (String) images.get(0).get("url");
+
+            return new SpotifyAlbumDto(
+                    (String) item.get("id"),
+                    (String) item.get("name"),
+                    artistNames,
+                    imageUrl,
+                    (String) item.get("release_date")
+            );
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -72,14 +82,27 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Object> tracksMap = (Map<String, Object>) body.get("tracks");
         List<Map<String, Object>> items = (List<Map<String, Object>>) tracksMap.get("items");
 
-        return items.stream().map(item -> new SpotifyTrackDto(
+        return items.stream().map(item -> {
+            List<Map<String, Object>> artistsList = (List<Map<String, Object>>) item.get("artists");
+            List<String> artistNames = artistsList.stream()
+                    .map(artist -> (String) artist.get("name"))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> albumMap = (Map<String, Object>) item.get("album");
+            String albumName = (String) item.get("name");
+
+            Integer durationMs = (Integer) item.get("duration_ms");
+
+            String previewUrl = (String) item.get("preview_url");
+
+            return new SpotifyTrackDto(
                 (String) item.get("id"),
                 (String) item.get("name"),
-                (List<String>) ((Map<String, Object>) ((List<?>) item.get("artists")).get(0)).get("name"),
-                (String) ((Map<String, Object>) item.get("album")).get("name"),
-                (Integer) item.get("durationMs"),
-                (String) item.get("previewUrl")
-
-        )).collect(Collectors.toList());
+                artistNames,
+                albumName,
+                durationMs,
+                previewUrl
+            );
+        }).collect(Collectors.toList());
     }
 }
