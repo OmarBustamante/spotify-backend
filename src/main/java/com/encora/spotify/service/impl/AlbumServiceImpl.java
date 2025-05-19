@@ -1,6 +1,7 @@
 package com.encora.spotify.service.impl;
 
 import com.encora.spotify.dto.SpotifyAlbumDto;
+import com.encora.spotify.dto.SpotifyTrackDto;
 import com.encora.spotify.service.AlbumService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,39 @@ public class AlbumServiceImpl implements AlbumService {
             List<Map<String, Object>> images = (List<Map<String, Object>>) body.get("images");
             String imageUrl = images != null && !images.isEmpty() ? (String) images.get(0).get("url") : null;
 
-            return new SpotifyAlbumDto(albumId, name, artists, imageUrl, releaseDate);
+            Map<String, Object> trackMap = (Map<String, Object>) body.get("tracks");
+            List<Map<String, Object>> trackItems = (List<Map<String, Object>>) trackMap.get("items");
+            List<SpotifyTrackDto> tracks = trackItems.stream()
+                    .map(track -> {
+                        String trackId = (String) track.get("id");
+                        String trackName = (String) track.get("name");
+                        int durationMs = (int) track.get("duration_ms");
+                        String previewUrl = (String) track.get("preview_url");
+                        String albumName = name;
+
+                        List<Map<String, Object>> trackArtists = (List<Map<String, Object>>) track.get("artists");
+                        List<String> artistNames = trackArtists.stream()
+                                .map(artist -> (String) artist.get("name"))
+                                .collect(Collectors.toList());
+
+                        return new SpotifyTrackDto(
+                                trackId,
+                                trackName,
+                                artistNames,
+                                albumName,
+                                durationMs,
+                                previewUrl
+                        );
+                    }).collect(Collectors.toList());
+
+            return new SpotifyAlbumDto(
+                    albumId,
+                    name,
+                    artists,
+                    imageUrl,
+                    releaseDate,
+                    tracks
+            );
         } catch (HttpClientErrorException e){
             throw new RuntimeException("Spotify API error: " + e.getMessage(), e);
         }

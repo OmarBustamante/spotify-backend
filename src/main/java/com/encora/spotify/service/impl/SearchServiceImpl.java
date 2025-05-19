@@ -67,12 +67,38 @@ public class SearchServiceImpl implements SearchService {
             List<Map<String, Object>> images = (List<Map<String, Object>>) item.get("images");
             String imageUrl = images.isEmpty() ? null : (String) images.get(0).get("url");
 
+            Map<String, Object> trackMap = (Map<String, Object>) body.get("tracks");
+            List<Map<String, Object>> trackItems = (List<Map<String, Object>>) trackMap.get("items");
+            List<SpotifyTrackDto> tracks = trackItems.stream()
+                    .map(track -> {
+                        String trackId = (String) track.get("id");
+                        String trackName = (String) track.get("name");
+                        int durationMs = (int) track.get("duration_ms");
+                        String previewUrl = (String) track.get("preview_url");
+                        String albumName = (String) item.get("name");
+
+                        List<Map<String, Object>> trackArtists = (List<Map<String, Object>>) track.get("artists");
+                        List<String> artistNamesT = trackArtists.stream()
+                                .map(artist -> (String) artist.get("name"))
+                                .collect(Collectors.toList());
+
+                        return new SpotifyTrackDto(
+                                trackId,
+                                trackName,
+                                artistNamesT,
+                                albumName,
+                                durationMs,
+                                previewUrl
+                        );
+                    }).collect(Collectors.toList());
+
             return new SpotifyAlbumDto(
                     (String) item.get("id"),
                     (String) item.get("name"),
                     artistNames,
                     imageUrl,
-                    (String) item.get("release_date")
+                    (String) item.get("release_date"),
+                    tracks
             );
         }).collect(Collectors.toList());
     }
