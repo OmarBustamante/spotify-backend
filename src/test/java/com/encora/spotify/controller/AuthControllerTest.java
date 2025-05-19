@@ -33,7 +33,7 @@ public class AuthControllerTest {
 
     @Test
     void shouldReturnTokensWhenCodeIsValid() throws Exception {
-        SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("valid-code", "http://localhost:3000/callback");
+        SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("valid-code", "http://localhost:5173/callback");
         SpotifyAuthResponseDto response = new SpotifyAuthResponseDto("access-token", "refresh-token", 3600);
 
         Mockito.when(authService.exchangeCodeForToken(Mockito.any())).thenReturn(response);
@@ -52,7 +52,7 @@ public class AuthControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenCodeIsInvalid() throws Exception{
-        SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("invalid-code", "http://localhost:3000/callback");
+        SpotifyAuthRequestDto request = new SpotifyAuthRequestDto("invalid-code", "http://localhost:5173/callback");
 
         Mockito.when(authService.exchangeCodeForToken(Mockito.any())).thenThrow(new RuntimeException("Invalid code"));
 
@@ -67,7 +67,7 @@ public class AuthControllerTest {
     void shouldReturnBadRequestWhenMissingFields() throws Exception{
         String invalidJson = """
                 {
-                    "redirectUri": "http:localhost:3000/callback"
+                    "redirectUri": "http:localhost:5173/callback"
                 }
                 """;
 

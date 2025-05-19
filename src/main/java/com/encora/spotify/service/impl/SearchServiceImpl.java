@@ -33,12 +33,18 @@ public class SearchServiceImpl implements SearchService {
         Map<String, Object> artistsMap = (Map<String, Object>) body.get("artists");
         List<Map<String, Object>> items = (List<Map<String, Object>>) artistsMap.get("items");
 
-        return items.stream().map(item -> new SpotifyArtistDto(
-                (String) item.get("id"),
-                (String) item.get("name"),
-                (List<String>) item.get("genres"),
-                ((Map<String, Object>) item.get("external_urls")).get("spotify").toString()
-        )).collect(Collectors.toList());
+        return items.stream().map(item -> {
+
+            List<Map<String, Object>> images = (List<Map<String, Object>>) item.get("images");
+            String imageUrl = images.isEmpty() ? null : (String) images.get(0).get("url");
+
+            return new SpotifyArtistDto(
+                    (String) item.get("id"),
+                    (String) item.get("name"),
+                    (List<String>) item.get("genres"),
+                    imageUrl
+            );
+        }).collect(Collectors.toList());
     }
 
     @Override

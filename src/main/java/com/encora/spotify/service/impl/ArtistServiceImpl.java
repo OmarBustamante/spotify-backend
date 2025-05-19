@@ -31,7 +31,7 @@ public class ArtistServiceImpl implements ArtistService {
         );*/
 
         //real response
-        String url = "https://api.spotify.com/v1/me/top/artists";
+        String url = "https://api.spotify.com/v1/me/top/artists?limit=10";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
