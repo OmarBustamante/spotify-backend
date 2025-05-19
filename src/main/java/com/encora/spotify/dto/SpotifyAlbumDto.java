@@ -9,16 +9,18 @@ public class SpotifyAlbumDto {
     private String imageUrl;
     private String releaseDate;
     private List<SpotifyTrackDto> tracks;
+    private List<String> artistsId;
 
     public SpotifyAlbumDto(){}
 
-    public SpotifyAlbumDto(String id, String name, List<String> artists, String imageUrl, String releaseDate, List<SpotifyTrackDto> tracks) {
+    public SpotifyAlbumDto(String id, String name, List<String> artists, String imageUrl, String releaseDate, List<SpotifyTrackDto> tracks, List<String> artistsId) {
         this.id = id;
         this.name = name;
         this.artists = artists;
         this.imageUrl = imageUrl;
         this.releaseDate = releaseDate;
         this.tracks = tracks;
+        this.artistsId = artistsId;
     }
 
     public String getId() {
@@ -67,5 +69,13 @@ public class SpotifyAlbumDto {
 
     public void setTracks(List<SpotifyTrackDto> tracks) {
         this.tracks = tracks;
+    }
+
+    public List<String> getArtistsId() {
+        return artistsId;
+    }
+
+    public void setArtistsId(List<String> artistsId) {
+        this.artistsId = artistsId;
     }
 }

@@ -71,7 +71,8 @@ public class ArtistServiceImpl implements ArtistService {
                         id,
                         name,
                         genres,
-                        imageUrl
+                        imageUrl,
+                        null
                 );
                 artists.add(artist);
             }
@@ -112,7 +113,10 @@ public class ArtistServiceImpl implements ArtistService {
 
             String imageUrl = images.isEmpty() ? null : (String) images.get(0).get("url");
 
-            return new SpotifyArtistDto(id, name, genres, imageUrl);
+            Map<String, Object> followersMap = (Map<String, Object>) body.get("followers");
+            Integer followers = followersMap != null ? (Integer) followersMap.get("total") : null;
+
+            return new SpotifyArtistDto(id, name, genres, imageUrl, followers);
         } catch (HttpClientErrorException e){
             throw new RuntimeException("Spotify API failed: " + e.getResponseBodyAsString(), e);
         }

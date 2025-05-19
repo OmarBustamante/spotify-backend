@@ -7,14 +7,16 @@ public class SpotifyArtistDto {
     private String name;
     private List<String> genres;
     private String imageUrl;
+    private Integer followers;
 
     public SpotifyArtistDto(){}
 
-    public SpotifyArtistDto(String id, String name, List<String> genres, String imageUrl){
+    public SpotifyArtistDto(String id, String name, List<String> genres, String imageUrl, Integer followers){
         this.id = id;
         this.name = name;
         this.genres = genres;
         this.imageUrl = imageUrl;
+        this.followers = followers;
     }
 
     public String getId() {
@@ -47,5 +49,13 @@ public class SpotifyArtistDto {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Integer getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Integer followers) {
+        this.followers = followers;
     }
 }

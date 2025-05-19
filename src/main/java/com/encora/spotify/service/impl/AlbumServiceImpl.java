@@ -48,6 +48,10 @@ public class AlbumServiceImpl implements AlbumService {
                     .map(artist -> (String) artist.get("name"))
                     .collect(Collectors.toList());
 
+            List<String> artistsId = artistList.stream()
+                    .map(artist -> (String) artist.get("id"))
+                    .collect(Collectors.toList());
+
             List<Map<String, Object>> images = (List<Map<String, Object>>) body.get("images");
             String imageUrl = images != null && !images.isEmpty() ? (String) images.get(0).get("url") : null;
 
@@ -82,7 +86,8 @@ public class AlbumServiceImpl implements AlbumService {
                     artists,
                     imageUrl,
                     releaseDate,
-                    tracks
+                    tracks,
+                    artistsId
             );
         } catch (HttpClientErrorException e){
             throw new RuntimeException("Spotify API error: " + e.getMessage(), e);
